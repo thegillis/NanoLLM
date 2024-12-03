@@ -47,7 +47,7 @@ class RivaTTS(AutoTTS):
           voice_volume (str): Increase or decrease the volume by [-13dB, 8dB]
           tts_buffering (str):  If 'punctuation', TTS will wait to generate until the end of sentences for better dynamics.  If 'time', TTS will wait until audio gap-out approaches.  If 'time,punctuation', will wait for both.
         """
-        super().__init__(tts_buffering=tts_buffering, **kwargs)
+        super().__init__(outputs=['audio'],tts_buffering=tts_buffering, **kwargs)
         
         self.server = riva_server
         self.auth = riva.client.Auth(uri=riva_server)
@@ -93,9 +93,9 @@ class RivaTTS(AutoTTS):
         self.volume = validate(voice_volume, self.volume, str)
         self.buffering = validate(tts_buffering, self.buffering, str)
 
-    def state_dict(self):
+    def state_dict(self, **kwargs):
         return {
-            **super().state_dict(),
+            **super().state_dict(**kwargs),
             'voice': self.voice,
             'voice_rate': self.rate,
             'voice_pitch': self.pitch,
@@ -124,7 +124,7 @@ class RivaTTS(AutoTTS):
         logging.debug(f"generating TTS for '{text}'")
 
         responses = self.tts_service.synthesize_online(
-            text, self.voice, self.language, sample_rate_hz=self.sample_rate
+            text, self.voice, self.language, sample_rate_hz=self.sample_rate, custom_dictionary=dict()
         )
 
         for response in responses:

@@ -54,7 +54,7 @@ class RivaASR(AutoASR):
           boosted_words (str): Words to boost when decoding the transcript (hotword, wakeword)
           boosted_score (float): The amount by which to boost the scores of the words above.  
         """
-        super().__init__(output_channels=2, **kwargs)
+        super().__init__(outputs=['final','partial'], **kwargs)
         
         self.server = riva_server
         self.auth = riva.client.Auth(uri=riva_server)
@@ -103,9 +103,9 @@ class RivaASR(AutoASR):
         """   
         self.confidence_threshold = validate(asr_threshold, self.confidence_threshold, float)
 
-    def state_dict(self):
+    def state_dict(self, **kwargs):
         return {
-            **super().state_dict(),
+            **super().state_dict(**kwargs),
             'asr_confidence': self.confidence_threshold,
        }
        
